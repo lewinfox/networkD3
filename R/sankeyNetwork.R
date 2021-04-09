@@ -78,15 +78,23 @@ sankeyNetwork <- function(Links, Nodes, Source, Target, Value,
     fontFamily = NULL, nodeWidth = 15, nodePadding = 10, margin = NULL,
     height = NULL, width = NULL, iterations = 32, sinksRight = TRUE)
 {
+    
+    # If tbl_df convert to plain data.frame
+    Links <- tbl_df_strip(Links)
+    Nodes <- tbl_df_strip(Nodes)
+    
+    # if Source or Target are missing assume Source is the first
+    # column Target is the second column
+    if (missing(Source))
+        Source = 1
+    if (missing(Target))
+        Target = 2
+    
     # Check if data is zero indexed
     check_zero(Links[, Source], Links[, Target])
 
     # Hack for UI consistency. Think of improving.
     colourScale <- as.character(colourScale)
-
-    # If tbl_df convert to plain data.frame
-    Links <- tbl_df_strip(Links)
-    Nodes <- tbl_df_strip(Nodes)
 
     # Subset data frames for network graph
     if (!is.data.frame(Links)) {
@@ -95,12 +103,6 @@ sankeyNetwork <- function(Links, Nodes, Source, Target, Value,
     if (!is.data.frame(Nodes)) {
         stop("Nodes must be a data frame class object.")
     }
-    # if Source or Target are missing assume Source is the first
-    # column Target is the second column
-    if (missing(Source))
-        Source = 1
-    if (missing(Target))
-        Target = 2
 
     if (missing(Value)) {
         LinksDF <- data.frame(Links[, Source], Links[, Target])
